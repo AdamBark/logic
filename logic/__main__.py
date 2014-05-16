@@ -33,6 +33,8 @@ def main():
     window = pyglet.window.Window(WIN_X*SCALE, WIN_Y*SCALE)
     gluOrtho2D(-1/SCALE, 1/SCALE, -1/SCALE, 1/SCALE)
     block = pyglet.resource.image("logic_block.png")
+    and_img = pyglet.resource.image("and.png")
+    and_block = pyglet.sprite.Sprite(and_img, x=0, y=WIN_Y-32)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     sprite = pyglet.sprite.Sprite(block, x=0, y=0)
@@ -41,15 +43,32 @@ def main():
     selector = pyglet.sprite.Sprite(
         pyglet.resource.image("selector.png"), x=BOARD_MIN_X, y=BOARD_MIN_Y)
     grid = pyglet.resource.image("grid2.png")
+    block_grid = pyglet.sprite.Sprite(pyglet.resource.image("block_grid.png"),
+                                      x=0, y=0)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    selector.block = pyglet.sprite.Sprite(and_img)
+    logic_blocks = {key._0: and_img, key.NUM_0: and_img}
+    num_keys = (key._0, key._1, key._2, key._3, key._4, key._5,
+                key._6, key._7, key._8, key._9, key.NUM_0, key.NUM_1,
+                key.NUM_2, key.NUM_3, key.NUM_4, key.NUM_5,
+                key.NUM_6, key.NUM_7, key.NUM_8, key.NUM_9)
+    grid_blocks = [[None]*8 for i in range(8)]
 
     @window.event
     def on_draw():
         window.clear()
-        grid.blit(0, 0)
+        and_block.draw()
+        block_grid.draw()
+        grid.blit(BOARD_MIN_X, BOARD_MIN_Y)
         sprite.draw()
         selector.draw()
+        selector.block.set_position(selector.x, selector.y)
+        selector.block.draw()
+        for row in grid_blocks:
+            for block_sprite in row:
+                if block_sprite is not None:
+                    block_sprite.draw()
 
     @window.event
     def on_key_press(symbol, modifier):
@@ -60,5 +79,19 @@ def main():
         elif symbol == key.LEFT:
             selector.x = max(BOARD_MIN_X, selector.x - BOARD_STEP)
         elif symbol == key.RIGHT:
-            selector.x = min(BOARD_MAX, selector.x + BOARD_STEP)
+            selector.x = min(BOARD_MAX_X, selector.x + BOARD_STEP)
+        elif symbol in num_keys:
+            try:
+                selector.block.image = logic_blocks[symbol]
+            except KeyError:
+                pass
+        elif symbol == key.RETURN:
+            x = (selector.x - BOARD_MIN_X)//16
+            y = (selector.y - BOARD_MIN_Y)//16
+            if grid_blocks[x][y]:
+                grid_blocks[x][y].image = selector.block.image
+            else:
+                grid_blocks[x][y] = pyglet.sprite.Sprite(selector.block.image,
+                                                         x=selector.x,
+                                                         y=selector.y)
     pyglet.app.run()
