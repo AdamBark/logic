@@ -20,14 +20,18 @@ from pyglet.gl import *
 
 
 def main():
+    BOARD_MIN = 0
+    BOARD_MAX = 112
+    BOARD_STEP = 16
+    SCALE = 4
     pyglet.resource.path = ["data"]
     pyglet.resource.reindex()
     window = pyglet.window.Window(512, 512)
-    gluOrtho2D(-0.25, 0.25, -0.25, 0.25)
+    gluOrtho2D(-1/SCALE, 1/SCALE, -1/SCALE, 1/SCALE)
     block = pyglet.resource.image("logic_block.png")
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    sprite = pyglet.sprite.Sprite(block, x=64, y=64)
+    sprite = pyglet.sprite.Sprite(block, x=0, y=0)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     selector = pyglet.sprite.Sprite(
@@ -46,11 +50,11 @@ def main():
     @window.event
     def on_key_press(symbol, modifier):
         if symbol == key.UP:
-            selector.y = min(112, selector.y + 16)
+            selector.y = min(BOARD_MAX, selector.y + BOARD_STEP)
         elif symbol == key.DOWN:
-            selector.y = max(0, selector.y - 16)
+            selector.y = max(BOARD_MIN, selector.y - BOARD_STEP)
         elif symbol == key.LEFT:
-            selector.x = max(0, selector.x - 16)
+            selector.x = max(BOARD_MIN, selector.x - BOARD_STEP)
         elif symbol == key.RIGHT:
-            selector.x = min(112, selector.x + 16)
+            selector.x = min(BOARD_MAX, selector.x + BOARD_STEP)
     pyglet.app.run()
