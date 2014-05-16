@@ -20,13 +20,17 @@ from pyglet.gl import *
 
 
 def main():
-    BOARD_MIN = 0
-    BOARD_MAX = 112
+    BOARD_MIN_X = 16
+    BOARD_MAX_X = 112 + BOARD_MIN_X
+    BOARD_MIN_Y = 0
+    BOARD_MAX_Y = 112 + BOARD_MIN_Y
     BOARD_STEP = 16
     SCALE = 4
+    WIN_X = 128 + 16
+    WIN_Y = 128
     pyglet.resource.path = ["data"]
     pyglet.resource.reindex()
-    window = pyglet.window.Window(512, 512)
+    window = pyglet.window.Window(WIN_X*SCALE, WIN_Y*SCALE)
     gluOrtho2D(-1/SCALE, 1/SCALE, -1/SCALE, 1/SCALE)
     block = pyglet.resource.image("logic_block.png")
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
@@ -35,7 +39,7 @@ def main():
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     selector = pyglet.sprite.Sprite(
-        pyglet.resource.image("selector.png"), x=0, y=0)
+        pyglet.resource.image("selector.png"), x=BOARD_MIN_X, y=BOARD_MIN_Y)
     grid = pyglet.resource.image("grid2.png")
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
@@ -50,11 +54,11 @@ def main():
     @window.event
     def on_key_press(symbol, modifier):
         if symbol == key.UP:
-            selector.y = min(BOARD_MAX, selector.y + BOARD_STEP)
+            selector.y = min(BOARD_MAX_Y, selector.y + BOARD_STEP)
         elif symbol == key.DOWN:
-            selector.y = max(BOARD_MIN, selector.y - BOARD_STEP)
+            selector.y = max(BOARD_MIN_Y, selector.y - BOARD_STEP)
         elif symbol == key.LEFT:
-            selector.x = max(BOARD_MIN, selector.x - BOARD_STEP)
+            selector.x = max(BOARD_MIN_X, selector.x - BOARD_STEP)
         elif symbol == key.RIGHT:
             selector.x = min(BOARD_MAX, selector.x + BOARD_STEP)
     pyglet.app.run()
