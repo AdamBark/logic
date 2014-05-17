@@ -27,6 +27,21 @@ def get_logic_blocks():
             key._1: and_img, key.NUM_1: and_img,
             key._2: or_img, key.NUM_2: or_img}
 
+
+def make_connecting_line(start, finish, colour=(255, 0, 0)):
+    offset = 4
+    second = (finish[0] - offset, start[1])
+    third = (finish[0] - offset, finish[1])
+    return pyglet.graphics.vertex_list(6,
+                                       ("v2i", (start[0], start[1],
+                                                second[0], second[1],
+                                                second[0], second[1],
+                                                third[0], third[1],
+                                                third[0], third[1],
+                                                finish[0], finish[1])),
+                                       ("c3B", colour*6))
+
+
 def main():
     BOARD_MIN_X = 16
     BOARD_MAX_X = 112 + BOARD_MIN_X
