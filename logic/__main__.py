@@ -19,6 +19,14 @@ from pyglet.window import key
 from pyglet.gl import *
 
 
+def get_logic_blocks():
+    blank = pyglet.resource.image("blank.png")
+    and_img = pyglet.resource.image("and.png")
+    or_img = pyglet.resource.image("or.png")
+    return {key._0: blank, key.NUM_0: blank,
+            key._1: and_img, key.NUM_1: and_img,
+            key._2: or_img, key.NUM_2: or_img}
+
 def main():
     BOARD_MIN_X = 16
     BOARD_MAX_X = 112 + BOARD_MIN_X
@@ -33,8 +41,6 @@ def main():
     window = pyglet.window.Window(WIN_X*SCALE, WIN_Y*SCALE)
     gluOrtho2D(-1/SCALE, 1/SCALE, -1/SCALE, 1/SCALE)
     block = pyglet.resource.image("logic_block.png")
-    and_img = pyglet.resource.image("and.png")
-    and_block = pyglet.sprite.Sprite(and_img, x=0, y=WIN_Y-32)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     sprite = pyglet.sprite.Sprite(block, x=0, y=0)
@@ -47,8 +53,8 @@ def main():
                                       x=0, y=0)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    selector.block = pyglet.sprite.Sprite(and_img)
-    logic_blocks = {key._0: and_img, key.NUM_0: and_img}
+    logic_blocks = get_logic_blocks()
+    selector.block = pyglet.sprite.Sprite(logic_blocks[key._0])
     num_keys = (key._0, key._1, key._2, key._3, key._4, key._5,
                 key._6, key._7, key._8, key._9, key.NUM_0, key.NUM_1,
                 key.NUM_2, key.NUM_3, key.NUM_4, key.NUM_5,
@@ -58,7 +64,6 @@ def main():
     @window.event
     def on_draw():
         window.clear()
-        and_block.draw()
         block_grid.draw()
         grid.blit(BOARD_MIN_X, BOARD_MIN_Y)
         sprite.draw()
