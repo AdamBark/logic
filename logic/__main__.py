@@ -67,13 +67,13 @@ def main():
         block_grid.draw()
         grid.blit(BOARD_MIN_X, BOARD_MIN_Y)
         sprite.draw()
-        selector.draw()
-        selector.block.set_position(selector.x, selector.y)
-        selector.block.draw()
         for row in grid_blocks:
             for block_sprite in row:
                 if block_sprite is not None:
                     block_sprite.draw()
+        selector.draw()
+        selector.block.set_position(selector.x, selector.y)
+        selector.block.draw()
 
     @window.event
     def on_key_press(symbol, modifier):
