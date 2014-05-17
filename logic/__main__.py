@@ -39,7 +39,7 @@ def main():
     pyglet.resource.path = ["data"]
     pyglet.resource.reindex()
     window = pyglet.window.Window(WIN_X*SCALE, WIN_Y*SCALE)
-    gluOrtho2D(-1/SCALE, 1/SCALE, -1/SCALE, 1/SCALE)
+    gluOrtho2D(-1.0/SCALE, 1.0/SCALE, -1.0/SCALE, 1.0/SCALE)
     block = pyglet.resource.image("logic_block.png")
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
