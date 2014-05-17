@@ -19,13 +19,29 @@ from pyglet.window import key
 from pyglet.gl import *
 
 
-def get_logic_blocks():
-    blank = pyglet.resource.image("blank.png")
-    and_img = pyglet.resource.image("and.png")
-    or_img = pyglet.resource.image("or.png")
-    return {key._0: blank, key.NUM_0: blank,
-            key._1: and_img, key.NUM_1: and_img,
-            key._2: or_img, key.NUM_2: or_img}
+def load_block_images():
+    return {"blank": pyglet.resource.image("blank.png"),
+            "and": pyglet.resource.image("and.png"),
+            "or": pyglet.resource.image("or.png")}
+
+def get_logic_blocks(images):
+    return {key._0: images["blank"], key.NUM_0: images["blank"],
+            key._1: images["and"], key.NUM_1: images["and"],
+            key._2: images["or"], key.NUM_2: images["or"]}
+
+
+def fill_block_grid(logic_blocks, start=(0, 112), step=-16):
+    block_batch = pyglet.graphics.Batch()
+    offset = 0
+    sprites = []
+    for block in logic_blocks:
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        sprites.append(pyglet.sprite.Sprite(block, x=start[0],
+                                            y=start[1]+offset,
+                                            batch=block_batch))
+        offset += step
+    return block_batch, sprites
 
 
 def make_connecting_line(start, finish, colour=(255, 0, 0)):
@@ -55,10 +71,6 @@ def main():
     pyglet.resource.reindex()
     window = pyglet.window.Window(WIN_X*SCALE, WIN_Y*SCALE)
     gluOrtho2D(-1.0/SCALE, 1.0/SCALE, -1.0/SCALE, 1.0/SCALE)
-    block = pyglet.resource.image("logic_block.png")
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    sprite = pyglet.sprite.Sprite(block, x=0, y=0)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     selector = pyglet.sprite.Sprite(
@@ -68,7 +80,9 @@ def main():
                                       x=0, y=0)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    logic_blocks = get_logic_blocks()
+    block_images = load_block_images()
+    logic_blocks = get_logic_blocks(block_images)
+    block_batch, block_sprites = fill_block_grid(block_images.values())
     selector.block = pyglet.sprite.Sprite(logic_blocks[key._0])
     num_keys = (key._0, key._1, key._2, key._3, key._4, key._5,
                 key._6, key._7, key._8, key._9, key.NUM_0, key.NUM_1,
@@ -80,8 +94,8 @@ def main():
     def on_draw():
         window.clear()
         block_grid.draw()
+        block_batch.draw()
         grid.blit(BOARD_MIN_X, BOARD_MIN_Y)
-        sprite.draw()
         for row in grid_blocks:
             for block_sprite in row:
                 if block_sprite is not None:
